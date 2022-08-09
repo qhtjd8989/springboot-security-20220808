@@ -1,5 +1,6 @@
 package com.study.security_bosung.service.auth;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -7,19 +8,38 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.study.security_bosung.domain.user.User;
 
+import lombok.Data;
+
+@Data
 public class PrincipalDetails implements UserDetails{
 
 	private static final long serialVersionUID = 1L;
 	
 	private User user;
 	
-	public PrincipalDetails() {
+	public PrincipalDetails(User user) {
 		this.user = user;
 	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		user.getUserRoles();
+		Collection<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
+//		List<String> roleList = user.getUserRoles();
+		
+		user.getUserRoles().forEach(role -> {
+			grantedAuthorities.add(() -> role);
+		});
+		
+//		for(String role : roleList) {
+//			GrantedAuthority authority = new GrantedAuthority() {
+//				
+//				@Override
+//				public String getAuthority() {
+//					return role;
+//				}
+//			};
+//			grantedAuthorities.add(authority);
+//		}
 		return null;
 	}
 
