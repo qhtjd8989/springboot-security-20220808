@@ -40,7 +40,7 @@ public class PrincipalDetails implements UserDetails{
 //			};
 //			grantedAuthorities.add(authority);
 //		}
-		return null;
+		return grantedAuthorities;
 	}
 
 	@Override
