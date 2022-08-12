@@ -1,8 +1,5 @@
 package com.study.security_bosung.web.controller.api;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
@@ -15,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.study.security_bosung.handler.aop.annotation.Log;
 import com.study.security_bosung.handler.aop.annotation.Timer;
-import com.study.security_bosung.handler.excption.CustomValidationApiExcption;
+import com.study.security_bosung.handler.aop.annotation.ValidCheck;
 import com.study.security_bosung.service.auth.AuthService;
 import com.study.security_bosung.service.auth.PrincipalDetailsService;
 import com.study.security_bosung.web.dto.CMRespDto;
@@ -34,17 +31,9 @@ public class AuthRestController {
 	
 	@Log
 	@Timer
+	@ValidCheck
 	@GetMapping("/signup/validation/username")
 	public ResponseEntity<?> checkUsername(@Valid UsernameCheckReqDto usernameCheckReqDto, BindingResult bindingResult) {
-		
-		if(bindingResult.hasErrors()) {
-			Map<String, String> errorMessage = new HashMap<String, String>();
-			
-			bindingResult.getFieldErrors().forEach(error ->{
-				errorMessage.put(error.getField(), error.getDefaultMessage());
-			});
-			throw new CustomValidationApiExcption("유효성 검사 실패", errorMessage);
-		}
 		
 		boolean status = false;
 		
@@ -58,18 +47,10 @@ public class AuthRestController {
 		return ResponseEntity.ok(new CMRespDto<>(1, "회원가입 가능여부", status));
 	}
 	
+	@ValidCheck
 	@PostMapping("/signup")
 	public ResponseEntity<?> signup(@RequestBody @Valid SignupReqDto signupReqDto, BindingResult bindingResult) {
 		boolean status = false;
-		
-		if(bindingResult.hasErrors()) {
-			Map<String, String> errorMessage = new HashMap<String, String>();
-			
-			bindingResult.getFieldErrors().forEach(error ->{
-				errorMessage.put(error.getField(), error.getDefaultMessage());
-			});
-			return ResponseEntity.badRequest().body(new CMRespDto<>(-1, "유효성 검사 실패", errorMessage));
-		}
 		
 		try {
 			status = principalDetailsService.addUser(signupReqDto);

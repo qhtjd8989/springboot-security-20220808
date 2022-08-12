@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Component
 public class LogAop {
+	
 	private static final Logger LOGGER = LoggerFactory.getLogger(LogAop.class);
 	
 	@Pointcut("@annotation(com.study.security_bosung.handler.aop.annotation.Log)")

@@ -12,10 +12,10 @@ import org.springframework.util.StopWatch;
 @Aspect
 @Component
 public class TimerAop {
-	
+	// Aop 관점분리
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass()); // TimerAop.class, this.getclass랑 같음
 	
-	@Pointcut("execution(* com.study.security_bosung.web.controller..*.*(..))")
+	@Pointcut("execution(* com.study.security_bosung.web.controller..*.*(..))")// *: 접근지정자(생략), return타입
 	private void pointCut() {}
 	
 	@Pointcut("@annotation(com.study.security_bosung.handler.aop.annotation.Timer)")
