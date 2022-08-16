@@ -8,10 +8,16 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.study.security_bosung.config.auth.AuthFailuerHandler;
+import com.study.security_bosung.service.auth.PrincipalOauth2UserService;
+
+import lombok.RequiredArgsConstructor;
 
 @EnableWebSecurity // 기존의 WebSecurityConfigurerAdapter를 비활성 시키고 현재 시큐리티 설정을 따르겠다.
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+	
+	private final PrincipalOauth2UserService principalOauth2UserService;
 	
 	@Bean 
 	public BCryptPasswordEncoder passwordEncoder() { // 암호화
@@ -44,7 +50,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.loginPage("/auth/signin") // 로그인 페이지는 해당 get요청을 통해 접근한다  해당 주소로 유도해주는 명령
 			.loginProcessingUrl("/auth/signin") // 로그인 요청(post), controller: Postmapping
 			.failureHandler(new AuthFailuerHandler())
-			.defaultSuccessUrl("/");
+			
+			.and()
+			
+			.oauth2Login()
+			.userInfoEndpoint()
+			.userService(principalOauth2UserService)
+			
+			.and()
+			
+			.defaultSuccessUrl("/index");
 		
 		/*
 		 * antMatchers로 접속하면 loginPage로 보낸다
