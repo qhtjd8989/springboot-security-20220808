@@ -24,6 +24,7 @@ public class PrincipalDetails implements UserDetails, OAuth2User{
 		this.user = user;
 	}
 	
+	// OAuth2 로그인에 필요
 	public PrincipalDetails(User user, Map<String, Object> attribute) {
 		this.user = user;
 		this.attribute = attribute;
@@ -38,6 +39,8 @@ public class PrincipalDetails implements UserDetails, OAuth2User{
 			grantedAuthorities.add(() -> role);
 		});
 		
+		return grantedAuthorities;
+		
 //		for(String role : roleList) {
 //			GrantedAuthority authority = new GrantedAuthority() {
 //				
@@ -48,7 +51,7 @@ public class PrincipalDetails implements UserDetails, OAuth2User{
 //			};
 //			grantedAuthorities.add(authority);
 //		}
-		return grantedAuthorities;
+		
 	}
 
 	@Override
