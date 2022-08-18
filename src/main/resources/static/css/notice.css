@@ -1,55 +1,3 @@
-/*-----------------<<  header  >>------------------ */
-header {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    position: relative;
-
-    padding: 50px;
-
-    height: 100px;
-
-}
-
-.nav-list {
-    border: none;
-    border-bottom: 2px solid #dbdbdb;
-    border-radius: 5px;
-
-    margin: 0px 10px;
-
-    width: 100px;
-    height: 30px;
-
-    background-color: white;
-
-    font-size: 14px;
-    font-weight: 400;
-}
-
-.auth-items {
-    position: absolute;
-    top: 10px;
-    right: 100px;
-}
-
-.auth-button {
-    border: none;
-    background-color: #fafafa;
-
-    padding: 5px;
-
-    width: 70px;
-
-    font-weight: 400;
-}
-
-.auth-button:hover {
-    border-bottom: 1px solid black
-    
-}
-
 /* -----------------<<  main  >>------------------ */
 
 main {
@@ -79,30 +27,6 @@ main {
     font-weight: 700;
 }
 
-.notice-search {
-    display: flex;
-    align-items: center;
-    padding-top: 100px;
-}
-
-.search-select, .search-input, .search-button {
-    border: 1px solid #141414;
-    outline: none;
-
-    margin-left: 5px;
-    padding: 0px 5px;
-    
-    height: 25px;
-}
-
-.search-button {
-    width: 60px;
-
-    font-weight: 600;
-}
-
-
-
 article {
     border: 2px solid #141414;
 
@@ -122,19 +46,6 @@ article {
 
 }
 
-.notice-row-header {
-    border-width: 2px 0px;
-    border-color: #dbdbdb;
-    border-style: solid;
-    
-    height: 40px;
-}
-
-.notice-row-header th {
-    font-size: 15px;
-    font-weight: 700;
-}
-
 .notice-row {
     border-bottom: 1px solid #dbdbdb;
 
@@ -143,46 +54,5 @@ article {
     cursor: pointer;
 }
 
-.notice-row:active {
-    background-color: #fafafa;
-}
 
-.notice-row td {
-    font-weight: 500;
-    text-align: center;
-}
-
-.notice-row td:nth-child(2) {
-    text-align: left;
-}
-
-.page-buttons {
-    display: flex;
-    justify-content: flex-start;
-    align-items: flex-start;
-
-    padding: 15px;
-
-    width: 70%;
-    height: 100px;
-}
-
-.page-button {
-    border: none;
-    border-radius: 50%;
-
-    margin: 2px;
-    
-    width: 25px;
-    height: 25px;
-
-    background-color: white;
-
-    font-size: 12px;
-    font-weight: 500;
-}
-
-.page-button:hover {
-    background-color: #9ee8ff;
-}
 
