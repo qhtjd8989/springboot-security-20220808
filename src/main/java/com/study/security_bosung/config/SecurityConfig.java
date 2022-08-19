@@ -6,6 +6,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.header.writers.StaticHeadersWriter;
+import org.springframework.web.filter.CorsFilter;
 
 import com.study.security_bosung.config.auth.AuthFailuerHandler;
 import com.study.security_bosung.service.auth.PrincipalOauth2UserService;
@@ -17,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
+	private final CorsFilter corsFilter; 
 	private final PrincipalOauth2UserService principalOauth2UserService;
 	
 	@Bean 
@@ -26,7 +29,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.csrf().disable(); // csrf 요청 위조 
+		http.csrf().disable(); // csrf 요청 위조
+		http.headers()
+			.frameOptions()
+			.disable()
+			.addHeaderWriter(new StaticHeadersWriter("X-FRAME-OPTIONS", "ALLOW-FROM" + "/**"));
+		http.addFilter(corsFilter);
 		http.authorizeRequests() // 인증관련된 세팅
 		
 			.antMatchers("/api/v1/grant/test/user/**")
