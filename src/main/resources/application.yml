@@ -47,6 +47,14 @@ spring:
     username: admin
     password: 1q2w3e4r
     
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+    
 mybatis:
   mapper-locations:
   - /mappers/*.xml
+
+file: #변수처럼 만듬
+  path: E:/bosung/bosung/workspace/git/springboot-security-20220808/upload/

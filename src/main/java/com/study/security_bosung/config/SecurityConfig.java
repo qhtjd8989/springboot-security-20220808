@@ -6,7 +6,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.header.writers.StaticHeadersWriter;
 import org.springframework.web.filter.CorsFilter;
 
 import com.study.security_bosung.config.auth.AuthFailuerHandler;
@@ -32,8 +31,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		http.csrf().disable(); // csrf 요청 위조
 		http.headers()
 			.frameOptions()
-			.disable()
-			.addHeaderWriter(new StaticHeadersWriter("X-FRAME-OPTIONS", "ALLOW-FROM" + "/**"));
+			.disable();
 		http.addFilter(corsFilter);
 		http.authorizeRequests() // 인증관련된 세팅
 		
@@ -42,6 +40,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			
 			.antMatchers("/api/v1/grant/test/manager/**")
 			.access("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
+
+			.antMatchers("/notice/addition", "/notice/modification/**")
+//			.access("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
+			.hasRole("ADMIN")
 			
 			.antMatchers("/api/v1/grant/test/admin/**")
 			.access("hasRole('ROLE_ADMIN')")
