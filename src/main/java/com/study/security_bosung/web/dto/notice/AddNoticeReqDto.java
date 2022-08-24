@@ -11,5 +11,5 @@ public class AddNoticeReqDto {
 	private String noticeTitle;
 	private int userCode;
 	private String ir1;
-	private List<MultipartFile> file; // MultipartFile 파일을 받을수 있는 객체
+	private List<MultipartFile> file; // MultipartFile: 파일을 받을수 있는 객체
 }
