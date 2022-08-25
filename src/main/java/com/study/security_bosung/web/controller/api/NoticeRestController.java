@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.study.security_bosung.service.notice.NoticeService;
 import com.study.security_bosung.web.dto.CMRespDto;
 import com.study.security_bosung.web.dto.notice.AddNoticeReqDto;
+import com.study.security_bosung.web.dto.notice.GetNoticeResponseDto;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,8 +44,35 @@ public class NoticeRestController {
 	
 	@GetMapping("/{noticeCode}")
 	public ResponseEntity<?> getNotice(@PathVariable int noticeCode) {
+		GetNoticeResponseDto getNoticeResponseDto = null;
+		try {
+			getNoticeResponseDto = noticeService.getNotice(null, noticeCode);
+			if(getNoticeResponseDto == null) {
+				return ResponseEntity.badRequest().body(new CMRespDto<>(-1, "request failes", null));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.internalServerError().body(new CMRespDto<>(-1, "database failes", null));
+		}
 		
-		return null;
+		return ResponseEntity.ok().body(new CMRespDto<>(1, "lookup successful", getNoticeResponseDto));
+	}
+	
+	@GetMapping("/{flag}/{noticeCode}")
+	public ResponseEntity<?> geNotice(@PathVariable String flag, @PathVariable int noticeCode) {
+		GetNoticeResponseDto getNoticeResponseDto = null;
+		if (flag.equals("pre") || flag.equals("next")) {
+			try {
+				getNoticeResponseDto = noticeService.getNotice(flag, noticeCode);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return ResponseEntity.internalServerError().body(new CMRespDto<>(-1, "database failes", null));
+			}
+		}else {
+			return ResponseEntity.badRequest().body(new CMRespDto<>(-1, "request failes", null));
+		}
+		
+		return ResponseEntity.ok().body(new CMRespDto<>(1, "lookup successful", getNoticeResponseDto));
 	}
 	
 }

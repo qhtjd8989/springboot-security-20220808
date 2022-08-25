@@ -5,8 +5,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.Predicate;
 
@@ -18,6 +21,7 @@ import com.study.security_bosung.domain.notice.Notice;
 import com.study.security_bosung.domain.notice.NoticeFile;
 import com.study.security_bosung.domain.notice.NoticeRepository;
 import com.study.security_bosung.web.dto.notice.AddNoticeReqDto;
+import com.study.security_bosung.web.dto.notice.GetNoticeResponseDto;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +45,7 @@ public class NoticeServiceImpl implements NoticeService{
 		
 		notice = Notice.builder()
 				.notice_title(addNoticeReqDto.getNoticeTitle())
+				.user_code(addNoticeReqDto.getUserCode())
 				.notice_content(addNoticeReqDto.getIr1())
 				.build();
 		
@@ -72,6 +77,44 @@ public class NoticeServiceImpl implements NoticeService{
 		}
 		
 		return notice.getNotice_code(); // insert된 notice의 code
+	}
+
+	@Override
+	public GetNoticeResponseDto getNotice(String flag, int noticeCode) throws Exception {
+		GetNoticeResponseDto getNoticeResponseDto = null;
+		
+		Map<String, Object> reqMap = new HashMap<String, Object>();
+		reqMap.put("flag", flag);
+		reqMap.put("notice_code", noticeCode);
+		
+		List<Notice> notices = noticeRepository.getNotice(reqMap); // list를 받는다
+		
+		if(!notices.isEmpty()) { // 비어있지 않으면 동작
+			List<Map<String, Object>> downloadfiles = new ArrayList<Map<String, Object>>();
+			notices.forEach(notice -> {
+				Map<String, Object> fileMap = new HashMap<String, Object>();
+				fileMap.put("fileCode", notice.getFile_code());
+				
+				String fileName = notice.getFile_name();
+				fileMap.put("fileName", fileName.substring(fileName.indexOf("_") + 1)); // _ 다음부터 잘라서 가져감
+				downloadfiles.add(fileMap);
+			});
+			
+			Notice firstNotice = notices.get(0);
+			
+			getNoticeResponseDto = GetNoticeResponseDto.builder()
+					.noticeCode(firstNotice.getNotice_code())
+					.noticeTitle(firstNotice.getNotice_title())
+					.userCode(firstNotice.getUser_code())
+					.userId(firstNotice.getUser_id())
+					.createDate(firstNotice.getCreate_date().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+					.noticeCount(firstNotice.getNotice_count())
+					.noticeContent(firstNotice.getNotice_content())
+					.downloadFiles(downloadfiles)
+					.build();
+		}
+		
+		return getNoticeResponseDto;
 	}
 
 }
