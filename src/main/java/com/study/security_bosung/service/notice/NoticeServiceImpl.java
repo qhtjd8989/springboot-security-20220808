@@ -21,6 +21,7 @@ import com.study.security_bosung.domain.notice.Notice;
 import com.study.security_bosung.domain.notice.NoticeFile;
 import com.study.security_bosung.domain.notice.NoticeRepository;
 import com.study.security_bosung.web.dto.notice.AddNoticeReqDto;
+import com.study.security_bosung.web.dto.notice.GetNoticeListResponseDto;
 import com.study.security_bosung.web.dto.notice.GetNoticeResponseDto;
 
 import lombok.RequiredArgsConstructor;
@@ -29,19 +30,36 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class NoticeServiceImpl implements NoticeService{
+public class NoticeServiceImpl implements NoticeService {
 	
 	@Value("${file.path}")
 	private String filePath;
 	
 	private final NoticeRepository noticeRepository;
-
+	
+	@Override
+	public List<GetNoticeListResponseDto> getNoticeList(int page, String searchFlag, String searchValue) throws Exception {
+		int index = (page - 1) * 10;
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("index", index);
+		map.put("search_flag", searchFlag);
+		map.put("search_value", searchValue == null ? "" : searchValue);
+		
+		List<GetNoticeListResponseDto> list = new ArrayList<GetNoticeListResponseDto>();
+		
+		noticeRepository.getNoticeList(map).forEach(notice -> {
+			list.add(notice.toListdto());
+		});
+		
+		return list;
+	}
+	
 	@Override
 	public int addNotice(AddNoticeReqDto addNoticeReqDto) throws Exception {
 		Predicate<String> predicate = (filename) -> !filename.isBlank();
 		
 		Notice notice = null;
-		
 		
 		notice = Notice.builder()
 				.notice_title(addNoticeReqDto.getNoticeTitle())
@@ -49,15 +67,16 @@ public class NoticeServiceImpl implements NoticeService{
 				.notice_content(addNoticeReqDto.getIr1())
 				.build();
 		
-		noticeRepository.saveNotice(notice); // code를 가지고있음
+		noticeRepository.saveNotice(notice);
 		
-		if(predicate.test(addNoticeReqDto.getFile().get(0).getOriginalFilename())) { // 파일명이 비어있지 않은 경우
+		if(predicate.test(addNoticeReqDto.getFile().get(0).getOriginalFilename())) {
 			List<NoticeFile> noticeFiles = new ArrayList<NoticeFile>();
 			
-			for(MultipartFile file : addNoticeReqDto.getFile()){
+			for(MultipartFile file : addNoticeReqDto.getFile()) {
 				String originalFilename = file.getOriginalFilename();
-				String tempFilename = UUID.randomUUID().toString().replaceAll("-", "")+ "_" + originalFilename;; // 랜덤한 문자열 생성(고유한 key값 생성)
+				String tempFilename = UUID.randomUUID().toString().replaceAll("-", "") + "_" + originalFilename;
 				log.info(tempFilename);
+				
 				Path uploadPath = Paths.get(filePath, "notice/" + tempFilename);
 				
 				File f = new File(filePath + "notice");
@@ -70,15 +89,17 @@ public class NoticeServiceImpl implements NoticeService{
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				// 리스트 생성
+				
 				noticeFiles.add(NoticeFile.builder().notice_code(notice.getNotice_code()).file_name(tempFilename).build());
 			}
+			
 			noticeRepository.saveNoticeFiles(noticeFiles);
+			
 		}
 		
-		return notice.getNotice_code(); // insert된 notice의 code
+		return notice.getNotice_code();
 	}
-
+	
 	@Override
 	public GetNoticeResponseDto getNotice(String flag, int noticeCode) throws Exception {
 		GetNoticeResponseDto getNoticeResponseDto = null;
@@ -87,17 +108,20 @@ public class NoticeServiceImpl implements NoticeService{
 		reqMap.put("flag", flag);
 		reqMap.put("notice_code", noticeCode);
 		
-		List<Notice> notices = noticeRepository.getNotice(reqMap); // list를 받는다
-		
-		if(!notices.isEmpty()) { // 비어있지 않으면 동작
-			List<Map<String, Object>> downloadfiles = new ArrayList<Map<String, Object>>();
+		noticeRepository.countIncrement(reqMap);
+		List<Notice> notices = noticeRepository.getNotice(reqMap);
+		if(!notices.isEmpty()) {
+			List<Map<String, Object>> downloadFiles = new ArrayList<Map<String,Object>>();
 			notices.forEach(notice -> {
 				Map<String, Object> fileMap = new HashMap<String, Object>();
-				fileMap.put("fileCode", notice.getFile_code());
-				
 				String fileName = notice.getFile_name();
-				fileMap.put("fileName", fileName.substring(fileName.indexOf("_") + 1)); // _ 다음부터 잘라서 가져감
-				downloadfiles.add(fileMap);
+				if(fileName != null) {
+					fileMap.put("fileCode", notice.getFile_code());
+					fileMap.put("fileOriginName", fileName.substring(fileName.indexOf("_") + 1));
+					fileMap.put("fileTempName", fileName);
+				}
+				
+				downloadFiles.add(fileMap);
 			});
 			
 			Notice firstNotice = notices.get(0);
@@ -110,11 +134,12 @@ public class NoticeServiceImpl implements NoticeService{
 					.createDate(firstNotice.getCreate_date().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
 					.noticeCount(firstNotice.getNotice_count())
 					.noticeContent(firstNotice.getNotice_content())
-					.downloadFiles(downloadfiles)
+					.downloadFiles(downloadFiles)
 					.build();
 		}
 		
 		return getNoticeResponseDto;
 	}
 
+	
 }
