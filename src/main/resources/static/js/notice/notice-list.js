@@ -23,6 +23,7 @@ function load(nowPage) {
 		dataType: "json",
 		success: (response) => {
 			getList(response.data);
+			getPageNumbers(response.data.totalNoticeCount);
 		},
 		error: (error) => {
 			console.log(error);
@@ -47,6 +48,15 @@ function getList(list){
             </tr>
 		`;
 	});
+}
+
+function getPageNumbers(totalNoticeCount) {
+	const pageButtons = document.querySelector(".page-buttons");
+	
+	const totalPageCount = totalNoticeCount % 10 == 0 ? totalNoticeCount / 10 : (totalNoticeCount / 10) + 1;
+	
+	const startIndex = nowPage % 5 == 0? nowPage - 4 : nowPage - (nowPage % 5) + 1;
+	const endIndex = startIndex + 4 <= totalPageCount ? startIndex + 4 : totalPageCount;
 }
 
 function getWriteButton() {
