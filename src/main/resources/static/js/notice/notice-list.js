@@ -22,10 +22,10 @@ function load(nowPage) {
 		},
 		dataType: "json",
 		success: (response) => {
-			if(response.data[0] != null){
+			if(response.data[0] != null) {
 				getList(response.data);
 				getPageNumbers(response.data[0].totalNoticeCount);
-			}else {
+			}else{
 				getList(new Array());
 				getPageNumbers(0);
 			}
@@ -33,7 +33,9 @@ function load(nowPage) {
 		error: (error) => {
 			console.log(error);
 		}
+		
 	});
+	
 }
 
 function getList(list){
@@ -54,49 +56,52 @@ function getList(list){
 	
 	const noticeRows = document.querySelectorAll(".notice-row");
 	noticeRows.forEach((row) => {
-		noticeRows.noclick = () => {
-			const noticeCode = row.querySelectorAll("td")[0].textContent
+		row.onclick = () => {
+			const noticeCode = row.querySelectorAll("td")[0].textContent;
 			location.href = "/notice/detail/" + noticeCode;
 		}
 	});
+	
+	
 }
 
 function getPageNumbers(totalNoticeCount) {
 	const pageButtons = document.querySelector(".page-buttons");
-
+	
 	const totalPageCount = totalNoticeCount % 10 == 0 ? totalNoticeCount / 10 : (totalNoticeCount / 10) + 1;
-
+	
 	const startIndex = nowPage % 5 == 0 ? nowPage - 4 : nowPage - (nowPage % 5) + 1;
 	const endIndex = startIndex + 4 <= totalPageCount ? startIndex + 4 : totalPageCount;
-
+	
 	console.log(
 		`
 			totalPageCount: ${totalNoticeCount}
 			startIndex: ${startIndex}
 			endIndex: ${endIndex}
 		`
+		
 	);
-
+	
 	pageButtons.innerHTML = ``;
-
+	
 	if(startIndex != 1) {
 		pageButtons.innerHTML += `
 			<button type="button" class="page-button pre">&lt;</button>
 		`;
 	}
-
+	
 	for(let i = startIndex; i <= endIndex; i++) {
 		pageButtons.innerHTML += `
 			<button type="button" class="page-button">${i}</button>
 		`
 	}
-
-	if(endIndex != totalPageCount) {
+	
+	if(endIndex != totalNoticeCount) {
 		pageButtons.innerHTML += `
 			<button type="button" class="page-button next">&gt;</button>
 		`;
 	}
-
+	
 	if(startIndex != 1) {
 		const prePageButton = document.querySelector(".pre");
 		prePageButton.onclick = () => {
@@ -104,15 +109,15 @@ function getPageNumbers(totalNoticeCount) {
 			load(nowPage);
 		}
 	}
-
-	if(endIndex != totalPageCount) {
+	
+	if(endIndex != totalNoticeCount) {
 		const nextPageButton = document.querySelector(".next");
 		nextPageButton.onclick = () => {
 			nowPage = endIndex + 1;
 			load(nowPage);
 		}
 	}
-
+	
 	const pageNumberButtons = document.querySelectorAll(".page-button");
 	pageNumberButtons.forEach(button => {
 		if(button.textContent != "<" && button.textContent != ">"){
@@ -122,7 +127,8 @@ function getPageNumbers(totalNoticeCount) {
 			}
 		}
 	});
-
+	
+	
 }
 
 function getWriteButton() {

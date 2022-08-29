@@ -27,7 +27,7 @@ public class Notice {
 	
 	private int total_notice_count;
 	
-	public GetNoticeListResponseDto toListdto() {
+	public GetNoticeListResponseDto toListDto() {
 		return GetNoticeListResponseDto.builder()
 				.noticeCode(notice_code)
 				.noticeTitle(notice_title)
